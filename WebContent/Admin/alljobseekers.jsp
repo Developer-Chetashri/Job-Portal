@@ -4,9 +4,10 @@
 <%@page import="java.sql.DriverManager"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.ResultSet"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql"%>
+<!DOCTYPE html>
 <%
     response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0");
     response.setHeader("Pragma", "no-cache");
@@ -71,57 +72,53 @@
     
     	<h2>Jobseekers:</h2>
     	
-    	
-    	
-    	<%      
-                Connection con= DbConnector.connect(); 
-  
-                PreparedStatement ps=con.prepareStatement(
-                "select * from jobseeker order by jskid desc");        
-                    
-                ResultSet rs=ps.executeQuery();
-                ResultSetMetaData rsmd=rs.getMetaData();
-                %>
-    	<% while (rs.next()){%>
+    	<sql:setDataSource var="db" driver="com.mysql.jdbc.Driver"
+		url="jdbc:mysql://localhost:3306/jobportal" user="root" password="pwd@123" />
+
+	<sql:query dataSource="${db }" var="rs">
+select * from jobseeker order by jskid desc ;
+</sql:query>
+<c:forEach var="alljs" items="${rs.rows}">
+    	<%-- <% while (rs.next()){%> --%>
     	<div class="row" style="margin:5%;width:90%;height:20%;border:solid 1px grey;padding:10px;">
 					<div class="form-group col-md-12">
-						<label class="col-md-3 control-lable" for="CandidateName"><h4><%= rs.getString("username") %></h4></label>
-						<label class="col-md-3 control-lable" for="CandidateName"><h4><%= rs.getString("workexp") %></h4></label>
+						<label class="col-md-3 control-lable" for="CandidateName"><h4><c:out value="${alljs.username}" /></h4></label>
+						 <label class="col-md-3 control-lable" for="CandidateName"><h4><c:out value="${alljs.workexp}" /></h4></label>
 						<div class="form-actions floatRight">
-							<a class="btn btn-primary btn-sm" href="updatejobseeker.jsp?userid=<%= rs.getInt(1) %>&type=Jobseeker">  Edit  </a>
-							<a class="btn btn-primary btn-sm" href="../DeleteUserServlet?userid=<%= rs.getInt(1) %>&type=Jobseeker">  Delete  </a>
+							<a class="btn btn-primary btn-sm" href="updatejobseeker.jsp?userid=${alljs.id } &type=Jobseeker">  Edit  </a>
+							<a class="btn btn-primary btn-sm" href="../DeleteUserServlet?userid=${alljs.id } &type=Jobseeker">  Delete  </a>
 						</div>
 					</div>
 					<div class="row">
 						<div class="form-group col-md-12">
-							<label class="col-md-3 control-lable" for="Name"><h4><%= rs.getString("firstname") %> <%= rs.getString("lastname") %></h4></label>
-							<label class="col-md-3 control-lable" for="Gender"><h4><%= rs.getString("gender") %></h4></label>
-							<label class="col-md-3 control-lable" for="Date of Birth"><h4><%= rs.getString("dob") %></h4></label>
+							<label class="col-md-3 control-lable" for="Name"><h4><c:out value="${alljs.firstname}" /> <c:out value="${alljs.lastname}" /></h4></label>
+							<label class="col-md-3 control-lable" for="Gender"><h4><c:out value="${alljs.gender}" /></h4></label>
+							<label class="col-md-3 control-lable" for="Date of Birth"><h4><c:out value="${alljs.dob}" /></h4></label>
 						</div>
 
 						<div class="form-group col-md-12">
 							<label class="col-md-3 control-lable"
-								for="Candidate-Contact-Number"><h5><%= rs.getString("contactno") %></h5></label> <label
-								class="col-md-3 control-lable" for="Candidate-EmailID"><h5><%= rs.getString("email") %></h5></label> 
+								for="Candidate-Contact-Number"><h5><c:out value="${alljs.contactno}" /></h5></label> <label
+								class="col-md-3 control-lable" for="Candidate-EmailID"><h5><c:out value="${alljs.email}" /></h5></label> 
 						</div>
 						
 						<div class="form-group col-md-12">
 							<label class="col-md-3 control-lable"
-								for="Candidate-Higher-Education"><h5><%= rs.getString("education") %></h5></label>
+								for="Candidate-Higher-Education"><h5><c:out value="${alljs.eduaction}" /></h5></label>
 							<label class="col-md-3 control-lable"
-								for="Candidate-Job-Category"><h5><h5><%= rs.getString("category") %></h5></h5></label>
+								for="Candidate-Job-Category"><h5><h5><c:out value="${alljs.category}" /></h5></h5></label>
 						</div>
 						
 						<div class="form-group col-md-12">
 							<label class="col-md-3 control-lable"
-								for="Candidate-Address"><h5><%= rs.getString("address") %></h5></label> <label
-								class="col-md-3 control-lable" for="Candidate-City"><h5><%= rs.getString("city") %></h5></label> 
+								for="Candidate-Address"><h5><c:out value="${alljs.address}" /></h5></label> <label
+								class="col-md-3 control-lable" for="Candidate-City"><c:out value="${alljs.city}" /></h5></label> 
 							<label class="col-md-3 control-lable"
-								for="Candidate-State"><h5><%= rs.getString("state") %></h5></label>
+								for="Candidate-State"><h5><c:out value="${alljs.state}" /></h5></label>
 						</div>
 					</div>
-				</div>
-    	<%} %>
+				</div> 
+    	</c:forEach>
     	
     	
     </div>
